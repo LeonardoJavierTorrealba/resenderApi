@@ -22,14 +22,13 @@ const resendApiController = {
                 var pool = await connection.startConnection(dbSettings);
                 var result = await pool.request().query(documentsDAO.getPendingsBySubsidiary(sub.idSucursal)); 
                 console.log(result.recordset);
+                pool.close();
                 
             }
             catch (error) {
                 console.log(error);
                 dbsResponses.errors.push(`No se pudo conectar a la Sucursal ${sub.name}`)
            }
-           
-            // dbsResponses.push(result);
     
     
             try {
@@ -40,7 +39,7 @@ const resendApiController = {
                     dbsResponses.documents.push(data);
                 }
             } catch (error) {
-                console.log(`Resultado de la sub ${sub.name} sin contenido`);                
+                console.log(`Sin respuesta de la sub ${sub.name}`);                
             }        
 
         
@@ -81,7 +80,7 @@ const resendApiController = {
             let data = req.body;
             let arrayRes = []
             let resUpdate = ""
-            let resJson = ""
+            let resResend = ""
 
             const configsResend = {
                 method: "POST",
@@ -100,30 +99,43 @@ const resendApiController = {
 
 
             for (const document of data) {
-                let urlUpdate = connection.endPoints.updateByVoucher + document.invoicerReference;
+                // let urlUpdate = connection.endPoints.updateByVoucher + document.invoicerReference;
                 let urlResend = connection.endPoints.resendToMega + document.invoicerReference;
-                let responseUpdate = await fetch(urlUpdate, configsUpdate)                
-                let responseFetch = await fetch(urlResend, configsResend);
+                // let responseUpdate = await fetch(urlUpdate, configsUpdate)                
+                let responseResend = await fetch(urlResend, configsResend);
                 
                
                
                 try {    
-                    resUpdate = await responseUpdate.json();
-                    console.log(resUpdate);
-                    resJson = await responseFetch.json();
-                    console.log(resJson);
-                    let JSONres = await JSON.parse(resJson);   
-                    let result = await JSON.parse(JSONres.results)
-                    let resultUpdate = await JSON.parse(resUpdate)         
-                    let statusUpdate = await JSON.parse(resultUpdate.status.description);
+                    // resUpdate = await responseUpdate.json();
+                    resResend = await responseResend.json();
+                    console.log(resUpdate);                    
+                    console.log(resResend);                    
+
+                    // let resultUpdate =  await JSON.parse(resUpdate.status.description);  
+                    let result = await JSON.parse(resResend.results);                                       
+                    
+
                     if(result.status.description == 'success'){
-                    arrayRes.push(`Documento ${document.idDocumento} de ${document.nombreSucursal}: Aprobado`)
+                        
+                        document.status = 'Aprobado';                        
+                        
+                    arrayRes.push(document);
                     console.log(`Documento ${document.idDocumento} de ${document.nombreSucursal}: Aprobado`);
                     }
+                    else{
+                        document.status = 'No Aprobado'
+                        arrayRes.push(document);
+                        resResend = `Documento ${document.idDocumento} de ${document.nombreSucursal}: No pudo aprobarse`
+                        console.log(resResend);
+
+
+                    }
                 } catch (error) {
-                    resJson = `Documento ${document.idDocumento} de ${document.nombreSucursal}: No pudo aprobarse`
-                    arrayRes.push(resJson);    
-                    console.log(error);          
+                    document.status = 'Error en la solicitud'
+                    arrayRes.push(document);
+                    resResend = `Documento ${document.idDocumento} de ${document.nombreSucursal}: No pudo aprobarse`
+                    console.log(resResend);       
                     
                 }             
             }                

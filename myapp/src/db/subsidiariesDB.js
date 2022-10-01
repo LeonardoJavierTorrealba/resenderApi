@@ -1,14 +1,14 @@
 const subsidiariesDB = {  
   
   QA: [
-    {
-        name: 'Central',
-        idSucursal: '01',
-        server: 'ARBUESRV018',
-        dataBase: 'MegatlonSGC_TEST',
-        company: 'Megatlon'
-      }
-      ,
+    // {
+    //     name: 'Central',
+    //     idSucursal: '01',
+    //     server: 'ARBUESRV018',
+    //     dataBase: 'MegatlonSGC_TEST',
+    //     company: 'Megatlon'
+    //   }
+      // ,
     {
         name: 'Allboys',
         idSucursal: '02',
