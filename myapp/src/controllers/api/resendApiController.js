@@ -4,26 +4,21 @@ import fetch from 'node-fetch';
 import subsidiariesDB from '../../db/subsidiariesDB.js';
 import { response } from 'express';
 
-const resendApiController = {
-
-    
+const resendApiController = {    
 
     getProcessBySub: async(req, res) => {
                 
         const subsidiaries = subsidiariesDB.Production;
-        const dbsResponses = {
-            documents: [],
-            errors: []
-        };
+        const dbsResponses = {documents: [], errors: []};
     
         for (let sub of subsidiaries){
             var dbSettings = await connection.dynamicSettings.setDBSettings(sub.server, sub.dataBase);
+            
             try {            
                 var pool = await connection.startConnection(dbSettings);
                 var result = await pool.request().query(documentsDAO.getPendingsBySubsidiary(sub.idSucursal)); 
                 console.log(result.recordset);
                 pool.close();
-                
             }
             catch (error) {
                 console.log(error);
@@ -35,22 +30,17 @@ const resendApiController = {
                 if (result.recordset.length > 0) {
                     let data = result.recordset
                     console.log(data);
-
                     dbsResponses.documents.push(data);
                 }
             } catch (error) {
                 console.log(`Sin respuesta de la sub ${sub.name}`);                
             }        
-
-        
-            
         } 
         
         dbsResponses.documents = dbsResponses.documents.flatMap(obj => obj)
-        res.json(dbsResponses)
-        
 
-        },
+        res.json(dbsResponses)
+    },
 
 
 
@@ -108,40 +98,33 @@ const resendApiController = {
                
                 try {    
                     // resUpdate = await responseUpdate.json();
-                    resResend = await responseResend.json();
-                    console.log(resUpdate);                    
-                    console.log(resResend);                    
+                    // console.log(resUpdate);                    
+                    resResend = await responseResend.json();                    
+                    console.log(resResend);   
 
                     // let resultUpdate =  await JSON.parse(resUpdate.status.description);  
                     let result = await JSON.parse(resResend.results);                                       
                     
 
-                    if(result.status.description == 'success'){
-                        
+                    if(result.status.description == 'success'){                        
                         document.status = 'Aprobado';                        
-                        
-                    arrayRes.push(document);
-                    console.log(`Documento ${document.idDocumento} de ${document.nombreSucursal}: Aprobado`);
+                        arrayRes.push(document);
+                        console.log(`Documento ${document.idDocumento} de ${document.nombreSucursal}: Aprobado`);
                     }
                     else{
                         document.status = 'No Aprobado'
                         arrayRes.push(document);
                         resResend = `Documento ${document.idDocumento} de ${document.nombreSucursal}: No pudo aprobarse`
                         console.log(resResend);
-
-
                     }
                 } catch (error) {
                     document.status = 'Error en la solicitud'
                     arrayRes.push(document);
                     resResend = `Documento ${document.idDocumento} de ${document.nombreSucursal}: No pudo aprobarse`
-                    console.log(resResend);       
-                    
+                    console.log(resResend);
                 }             
-            }                
-            
+            }            
             res.json(arrayRes);
-
         }
 }
 
