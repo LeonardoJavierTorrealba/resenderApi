@@ -33,7 +33,7 @@ const documentsDAO = {
         `DECLARE @Fdesde DATE, 
         @FHasta DATE = GETDATE();
         SET @Fdesde = GETDATE()-${previousDays}
-        SELECT d.iddocumento as idDocumento, d.idSucursal, s.nombre as nombreSucursal, CONCAT(d.idSucursalSocio, '-' ,d.idSocio) as idSocio, soc.numeroDoc, d.importeTotal, d.InvoicerReference as invoicerReference, CONVERT(varchar,d.tsInsert,20) as dateTime
+        SELECT TOP(1) d.iddocumento as idDocumento, d.idSucursal, s.nombre as nombreSucursal, CONCAT(d.idSucursalSocio, '-' ,d.idSocio) as idSocio, soc.numeroDoc, d.importeTotal, d.InvoicerReference as invoicerReference, CONVERT(varchar,d.tsInsert,20) as dateTime
         FROM documentos d
 		INNER JOIN sucursales s ON d.idSucursal = s.idSucursal
 		INNER JOIN socios soc ON soc.idSocio = d.idSocio AND soc.idSucursal = d.idSucursalSocio

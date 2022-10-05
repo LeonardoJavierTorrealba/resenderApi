@@ -93,8 +93,6 @@ const resendApiController = {
                 let urlResend = connection.endPoints.resendToMega + document.invoicerReference;
                 // let responseUpdate = await fetch(urlUpdate, configsUpdate)                
                 let responseResend = await fetch(urlResend, configsResend);
-                
-               
                
                 try {    
                     // resUpdate = await responseUpdate.json();
@@ -109,7 +107,7 @@ const resendApiController = {
                     if(result.status.description == 'success'){                        
                         document.status = 'Aprobado';                        
                         arrayRes.push(document);
-                        console.log(`Documento ${document.idDocumento} de ${document.nombreSucursal}: Aprobado`);
+                        console.log(document.status);
                     }
                     else{
                         document.status = 'No Aprobado'
