@@ -68,14 +68,14 @@ const resendApiController = {
         resendToMega: async(req, res) => {
 
             let data = req.body;
-            let arrayRes = []
+            let response = []
             let resUpdate = ""
             let resResend = ""
 
             const configsResend = {
                 method: "POST",
                 headers: {
-                    "ReplyTo": 'https://mega-sgc-api.azurewebsites.net/api/WebHook/Invoice/Single/Result',
+                    "ReplyTo": connection.endPoints.replyToMega,
                     "Content-Type": "application/json"
                 }
             }
@@ -105,25 +105,71 @@ const resendApiController = {
                     
 
                     if(result.status.description == 'success'){                        
-                        document.status = 'Aprobado';                        
-                        arrayRes.push(document);
+                        document.status = 'Aprobado';                                              
+                        response.push(document);
                         console.log(document.status);
                     }
                     else{
-                        document.status = 'No Aprobado'
-                        arrayRes.push(document);
+                        document.status = 'No Aprobado'                        
+                        response.push(document);
                         resResend = `Documento ${document.idDocumento} de ${document.nombreSucursal}: No pudo aprobarse`
                         console.log(resResend);
                     }
                 } catch (error) {
-                    document.status = 'Error en la solicitud'
-                    arrayRes.push(document);
+                    document.status = 'Error en la solicitud'                    
+                    response.push(document);
                     resResend = `Documento ${document.idDocumento} de ${document.nombreSucursal}: No pudo aprobarse`
                     console.log(resResend);
                 }             
             }            
-            res.json(arrayRes);
-        }
+            res.json(response);
+        },
+
+
+        resendDoc: async (req, res) => {
+
+            let urlResend = connection.endPoints.resendToMega + req.params.invoicerReference;   
+            let response = "";  
+            let resResend = "";
+            let document = {};
+
+            const configsResend = {
+                method: "POST",
+                headers: {
+                    "ReplyTo": connection.endPoints.replyToMega,
+                    "Content-Type": "application/json"
+                }
+            }                           
+            
+            let responseResend = await fetch(urlResend, configsResend);
+           
+            try {                     
+                resResend = await responseResend.json();                    
+                console.log(resResend);                  
+                let result = await JSON.parse(resResend.results);                                                       
+                if(result.status.description == 'success'){                        
+                    document.status = 'Aprobado';                    
+                    response = document;
+                    console.log(response);
+                }
+                else{
+                    document.status = 'No Aprobado'
+                    response = document;
+                    resResend = `Documento ${document.idDocumento} de ${document.nombreSucursal}: No pudo aprobarse`
+                    console.log(response);
+                }
+            } catch (error) {
+                document.status = `Error en la solicitud (${responseResend.status})`                
+                response = document;
+                resResend = `Documento ${document.idDocumento} de ${document.nombreSucursal}: No pudo aprobarse`
+                console.log(response);
+            }
+
+            res.json(response);             
+        }            
+        
+
+ 
 }
 
 
