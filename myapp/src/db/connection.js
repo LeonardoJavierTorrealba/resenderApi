@@ -10,7 +10,7 @@ const connection = {
     dynamicSettings:{
         setDBSettings: async(srv, db) => {
             let dbSettings = {user: 'appsgc',
-            password: 'UsrSgc159',
+            password: 'xxx',
             server: srv,
             database: db,
             setTimeout: 900000,
@@ -30,7 +30,7 @@ const connection = {
     staticSettings: {
         prodMega:  {
             user: 'desa',
-            password: 'AdMiN5811',
+            password: 'xxx',
             server: 'ARBUESRV251',
             database: 'MegatlonSGC_Prod_01',
             setTimeout: 300000,
@@ -47,7 +47,7 @@ const connection = {
             },
         qa: {
             user: 'desa',
-            password: 'AdMiN5811',
+            password: 'xxx',
             server: 'ARBUESRV018',
             database: 'MegatlonSGC_Test',
             setTimeout: 900000,
