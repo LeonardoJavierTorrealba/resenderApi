@@ -116,7 +116,7 @@ const resendApiController = {
                         console.log(resResend);
                     }
                 } catch (error) {
-                    document.status = 'Error en la solicitud'                    
+                    document.status = 'Reintente'                    
                     response.push(document);
                     resResend = `Documento ${document.idDocumento} de ${document.nombreSucursal}: No pudo aprobarse`
                     console.log(resResend);
